@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Instruments</title>
+    <title>RootLab | Заметки + Калькулятор + Таймер + Секундомер</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,6 @@
             min-height: 100vh;
         }
 
-        /* Тёмная тема */
         body.dark {
             background: #1a1a2e;
             color: #e0e0e0;
@@ -30,7 +29,6 @@
             margin: 0 auto;
         }
 
-        /* Шапка */
         .header {
             background: white;
             border-radius: 20px;
@@ -88,7 +86,6 @@
             background: #5c6f96;
         }
 
-        /* Карточки */
         .card {
             background: white;
             border-radius: 20px;
@@ -117,7 +114,6 @@
             color: #7c8db0;
         }
 
-        /* Заметки */
         .note-input {
             display: flex;
             gap: 10px;
@@ -143,10 +139,6 @@
             background: #0f0f23;
             border-color: #2a2a4a;
             color: #e0e0e0;
-        }
-
-        body.dark .note-input input:focus {
-            border-color: #5c6f96;
         }
 
         button {
@@ -212,7 +204,6 @@
             font-size: 0.85rem;
         }
 
-        /* Статистика заметок */
         .notes-stats {
             font-size: 0.75rem;
             color: #6c7a91;
@@ -227,7 +218,6 @@
             color: #5c6f96;
         }
 
-        /* Калькулятор */
         .calc-inputs {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -283,8 +273,7 @@
             background: #0f0f23;
         }
 
-        /* Таймер */
-        .timer-controls {
+        .timer-controls, .stopwatch-controls {
             display: flex;
             gap: 8px;
             margin: 15px 0;
@@ -307,7 +296,7 @@
             color: #e0e0e0;
         }
 
-        .timer-display {
+        .timer-display, .stopwatch-display {
             font-size: 2rem;
             font-family: monospace;
             font-weight: 600;
@@ -318,11 +307,11 @@
             margin: 10px 0;
         }
 
-        body.dark .timer-display {
+        body.dark .timer-display,
+        body.dark .stopwatch-display {
             background: #0f0f23;
         }
 
-        /* Прогресс-бар */
         .timer-progress {
             width: 100%;
             height: 4px;
@@ -348,7 +337,27 @@
             background: #5c6f96;
         }
 
-        /* Уведомления */
+        .lap-list {
+            margin-top: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .lap-item {
+            background: #f8f9fa;
+            padding: 6px 12px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        body.dark .lap-item {
+            background: #0f0f23;
+        }
+
         .toast {
             position: fixed;
             bottom: 24px;
@@ -394,7 +403,7 @@
                 padding: 8px 10px;
             }
             
-            .timer-display {
+            .timer-display, .stopwatch-display {
                 font-size: 1.5rem;
                 padding: 12px;
             }
@@ -410,11 +419,10 @@
 </head>
 <body>
 <div class="container">
-    <!-- Шапка -->
     <div class="header">
         <div>
-            <h1>📋 Инструменты<h1>
-            <div class="header-stats">чистый интерфейс</div>
+            <h1>📋 RootLab</h1>
+            <div class="header-stats">заметки · калькулятор · таймер · секундомер</div>
         </div>
         <button class="theme-btn" id="themeBtn">🌙 Тёмная</button>
     </div>
@@ -427,7 +435,7 @@
             <button id="addNoteBtn">Добавить</button>
         </div>
         <div id="notesList"></div>
-        <div class="notes-stats" id="notesStats">Всего заметок: 0</div>
+        <div class="notes-stats" id="notesStats">всего заметок: 0</div>
     </div>
 
     <!-- Калькулятор -->
@@ -447,7 +455,7 @@
         <div class="calc-result" id="calcResult">Результат: —</div>
     </div>
 
-    <!-- Таймер -->
+    <!-- Таймер (обратный отсчёт) -->
     <div class="card">
         <h2>⏱️ Таймер</h2>
         <div class="timer-controls">
@@ -460,6 +468,19 @@
         <div class="timer-progress">
             <div class="timer-progress-bar" id="timerProgress"></div>
         </div>
+    </div>
+
+    <!-- Секундомер -->
+    <div class="card">
+        <h2>⏲️ Секундомер</h2>
+        <div class="stopwatch-controls">
+            <button id="startStopwatchBtn">▶ Старт</button>
+            <button id="pauseStopwatchBtn">⏸ Пауза</button>
+            <button id="resetStopwatchBtn">🔄 Сброс</button>
+            <button id="lapStopwatchBtn">⏱ Круг</button>
+        </div>
+        <div class="stopwatch-display" id="stopwatchDisplay">00:00:00.00</div>
+        <div id="lapList" class="lap-list"></div>
     </div>
 
     <footer>
@@ -631,7 +652,6 @@
         showResult(Math.pow(a, b), '^');
     });
 
-    // Сохранение значений калькулятора
     function saveCalcValues() {
         localStorage.setItem('calc_a', document.getElementById('calcA').value);
         localStorage.setItem('calc_b', document.getElementById('calcB').value);
@@ -710,7 +730,7 @@
                     
                     if (remaining <= 0) {
                         stopTimer();
-                        showToast('время вышло');
+                        showToast('⏰ время вышло');
                     }
                 }
             }
@@ -736,12 +756,90 @@
     document.getElementById('stopTimerBtn').addEventListener('click', stopTimer);
     document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
 
-    // Сохранение значения таймера
     const lastTimer = localStorage.getItem('last_timer');
     if (lastTimer) document.getElementById('timerSec').value = lastTimer;
     document.getElementById('timerSec').addEventListener('change', () => {
         localStorage.setItem('last_timer', document.getElementById('timerSec').value);
     });
+
+    // ========== СЕКУНДОМЕР ==========
+    let stopwatchInterval = null;
+    let stopwatchTime = 0;
+    let laps = [];
+
+    function formatTime(ms) {
+        const hours = Math.floor(ms / 3600000);
+        const minutes = Math.floor((ms % 3600000) / 60000);
+        const seconds = Math.floor((ms % 60000) / 1000);
+        const centiseconds = Math.floor((ms % 1000) / 10);
+        
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`;
+    }
+
+    function updateStopwatchDisplay() {
+        const display = document.getElementById('stopwatchDisplay');
+        display.textContent = formatTime(stopwatchTime);
+    }
+
+    function renderLaps() {
+        const lapContainer = document.getElementById('lapList');
+        if (laps.length === 0) {
+            lapContainer.innerHTML = '';
+            return;
+        }
+        
+        lapContainer.innerHTML = '<div style="font-size:0.7rem; color:#6c7a91; margin-bottom:6px;">📊 круги:</div>';
+        laps.forEach((lap, index) => {
+            const lapDiv = document.createElement('div');
+            lapDiv.className = 'lap-item';
+            lapDiv.innerHTML = `<span>круг ${index + 1}</span><span>${lap}</span>`;
+            lapContainer.appendChild(lapDiv);
+        });
+    }
+
+    function startStopwatch() {
+        if (stopwatchInterval) return;
+        
+        const startTime = Date.now() - stopwatchTime;
+        stopwatchInterval = setInterval(() => {
+            stopwatchTime = Date.now() - startTime;
+            updateStopwatchDisplay();
+        }, 10);
+        showToast('секундомер запущен');
+    }
+
+    function pauseStopwatch() {
+        if (stopwatchInterval) {
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+            showToast('секундомер на паузе');
+        }
+    }
+
+    function resetStopwatch() {
+        pauseStopwatch();
+        stopwatchTime = 0;
+        laps = [];
+        updateStopwatchDisplay();
+        renderLaps();
+        showToast('секундомер сброшен');
+    }
+
+    function addLap() {
+        if (stopwatchTime === 0 && laps.length === 0) {
+            showToast('запустите секундомер');
+            return;
+        }
+        const currentTime = formatTime(stopwatchTime);
+        laps.unshift(currentTime);
+        renderLaps();
+        showToast(`круг: ${currentTime}`);
+    }
+
+    document.getElementById('startStopwatchBtn').addEventListener('click', startStopwatch);
+    document.getElementById('pauseStopwatchBtn').addEventListener('click', pauseStopwatch);
+    document.getElementById('resetStopwatchBtn').addEventListener('click', resetStopwatch);
+    document.getElementById('lapStopwatchBtn').addEventListener('click', addLap);
 
     showToast('готов к работе');
 </script>
