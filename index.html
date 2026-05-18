@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>RootLab | Чистый инструмент</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            transition: background 0.2s ease;
+            min-height: 100vh;
+        }
+
+        /* Тёмная тема */
+        body.dark {
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* Шапка */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        body.dark .header {
+            background: #16213e;
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            color: #2c3e66;
+            font-weight: 600;
+        }
+
+        body.dark .header h1 {
+            color: #7c8db0;
+        }
+
+        .header-stats {
+            font-size: 0.75rem;
+            color: #6c7a91;
+            margin-top: 4px;
+        }
+
+        .theme-btn {
+            background: #3b4b6e;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .theme-btn:hover {
+            background: #2c3e66;
+        }
+
+        body.dark .theme-btn {
+            background: #4a5b7e;
+        }
+
+        body.dark .theme-btn:hover {
+            background: #5c6f96;
+        }
+
+        /* Карточки */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.4rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        body.dark .card {
+            background: #16213e;
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #2c3e66;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.dark .card h2 {
+            color: #7c8db0;
+        }
+
+        /* Заметки */
+        .note-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .note-input input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .note-input input:focus {
+            border-color: #3b4b6e;
+        }
+
+        body.dark .note-input input {
+            background: #0f0f23;
+            border-color: #2a2a4a;
+            color: #e0e0e0;
+        }
+
+        body.dark .note-input input:focus {
+            border-color: #5c6f96;
+        }
+
+        button {
+            background: #3b4b6e;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #2c3e66;
+        }
+
+        body.dark button {
+            background: #4a5b7e;
+        }
+
+        body.dark button:hover {
+            background: #5c6f96;
+        }
+
+        .delete-note {
+            background: #9e2d2f;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+        }
+
+        .delete-note:hover {
+            background: #7a2325;
+        }
+
+        .note-item {
+            background: #f8f9fa;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e9ecef;
+        }
+
+        body.dark .note-item {
+            background: #0f0f23;
+            border-color: #2a2a4a;
+        }
+
+        .note-text {
+            flex: 1;
+            word-break: break-word;
+            font-size: 0.9rem;
+        }
+
+        .empty {
+            text-align: center;
+            color: #9ca3af;
+            padding: 2rem;
+            font-size: 0.85rem;
+        }
+
+        /* Статистика заметок */
+        .notes-stats {
+            font-size: 0.75rem;
+            color: #6c7a91;
+            margin-top: 12px;
+            text-align: center;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        body.dark .notes-stats {
+            border-top-color: #2a2a4a;
+            color: #5c6f96;
+        }
+
+        /* Калькулятор */
+        .calc-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .calc-inputs input {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            text-align: center;
+            background: white;
+        }
+
+        .calc-inputs input:focus {
+            border-color: #3b4b6e;
+            outline: none;
+        }
+
+        body.dark .calc-inputs input {
+            background: #0f0f23;
+            border-color: #2a2a4a;
+            color: #e0e0e0;
+        }
+
+        .calc-buttons {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .calc-buttons button {
+            flex: 1;
+            min-width: 70px;
+            font-size: 0.85rem;
+        }
+
+        .calc-result {
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+
+        body.dark .calc-result {
+            background: #0f0f23;
+        }
+
+        /* Таймер */
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .timer-controls input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            text-align: center;
+            background: white;
+        }
+
+        body.dark .timer-controls input {
+            background: #0f0f23;
+            border-color: #2a2a4a;
+            color: #e0e0e0;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-family: monospace;
+            font-weight: 600;
+            text-align: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 14px;
+            margin: 10px 0;
+        }
+
+        body.dark .timer-display {
+            background: #0f0f23;
+        }
+
+        /* Прогресс-бар */
+        .timer-progress {
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        body.dark .timer-progress {
+            background: #2a2a4a;
+        }
+
+        .timer-progress-bar {
+            height: 100%;
+            background: #3b4b6e;
+            width: 0%;
+            transition: width 0.1s linear;
+            border-radius: 2px;
+        }
+
+        body.dark .timer-progress-bar {
+            background: #5c6f96;
+        }
+
+        /* Уведомления */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d2d2d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        body.dark .toast {
+            background: #2a2a2a;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #8b9ab0;
+            margin-top: 1rem;
+            padding-bottom: 0.5rem;
+        }
+
+        body.dark footer {
+            color: #5c6f96;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 12px;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
+            
+            .calc-buttons button {
+                font-size: 0.75rem;
+                padding: 8px 10px;
+            }
+            
+            .timer-display {
+                font-size: 1.5rem;
+                padding: 12px;
+            }
+            
+            .toast {
+                white-space: normal;
+                max-width: 90%;
+                text-align: center;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Шапка -->
+    <div class="header">
+        <div>
+            <h1>📋 RootLab</h1>
+            <div class="header-stats">чистый интерфейс</div>
+        </div>
+        <button class="theme-btn" id="themeBtn">🌙 Тёмная</button>
+    </div>
+
+    <!-- Заметки -->
+    <div class="card">
+        <h2>📝 Заметки</h2>
+        <div class="note-input">
+            <input type="text" id="noteText" placeholder="Новая заметка..." autocomplete="off" maxlength="200">
+            <button id="addNoteBtn">Добавить</button>
+        </div>
+        <div id="notesList"></div>
+        <div class="notes-stats" id="notesStats">Всего заметок: 0</div>
+    </div>
+
+    <!-- Калькулятор -->
+    <div class="card">
+        <h2>🧮 Калькулятор</h2>
+        <div class="calc-inputs">
+            <input type="number" id="calcA" placeholder="Число 1" value="10" step="any">
+            <input type="number" id="calcB" placeholder="Число 2" value="5" step="any">
+        </div>
+        <div class="calc-buttons">
+            <button id="sumBtn">+ Сумма</button>
+            <button id="diffBtn">- Разность</button>
+            <button id="multBtn">× Умнож.</button>
+            <button id="divBtn">÷ Деление</button>
+            <button id="powBtn">^ Степень</button>
+        </div>
+        <div class="calc-result" id="calcResult">Результат: —</div>
+    </div>
+
+    <!-- Таймер -->
+    <div class="card">
+        <h2>⏱️ Таймер</h2>
+        <div class="timer-controls">
+            <input type="number" id="timerSec" placeholder="Секунды" value="10" min="1" max="3600">
+            <button id="startTimerBtn">Старт</button>
+            <button id="stopTimerBtn">Стоп</button>
+            <button id="resetTimerBtn">Сброс</button>
+        </div>
+        <div class="timer-display" id="timerDisplay">10 сек</div>
+        <div class="timer-progress">
+            <div class="timer-progress-bar" id="timerProgress"></div>
+        </div>
+    </div>
+
+    <footer>
+        💾 данные сохраняются | 📱 адаптивный интерфейс
+    </footer>
+</div>
+
+<script>
+    // ========== ТЕМА ==========
+    const themeBtn = document.getElementById('themeBtn');
+    const isDark = localStorage.getItem('theme') === 'dark';
+    if (isDark) document.body.classList.add('dark');
+    
+    themeBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        const darkNow = document.body.classList.contains('dark');
+        localStorage.setItem('theme', darkNow ? 'dark' : 'light');
+        themeBtn.innerText = darkNow ? '☀️ Светлая' : '🌙 Тёмная';
+        showToast(darkNow ? 'Тёмная тема' : 'Светлая тема');
+    });
+    themeBtn.innerText = isDark ? '☀️ Светлая' : '🌙 Тёмная';
+
+    // ========== УВЕДОМЛЕНИЯ ==========
+    function showToast(message) {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.remove(), 1800);
+    }
+
+    // ========== ЗАМЕТКИ ==========
+    let notes = [];
+    const STORAGE_NOTES = 'rootlab_notes';
+
+    function loadNotes() {
+        const saved = localStorage.getItem(STORAGE_NOTES);
+        if (saved) {
+            try {
+                notes = JSON.parse(saved);
+            } catch(e) { notes = []; }
+        }
+        renderNotes();
+    }
+
+    function saveNotes() {
+        localStorage.setItem(STORAGE_NOTES, JSON.stringify(notes));
+        updateStats();
+    }
+
+    function updateStats() {
+        const stats = document.getElementById('notesStats');
+        if (stats) stats.textContent = `📊 всего заметок: ${notes.length}`;
+    }
+
+    function addNote() {
+        const input = document.getElementById('noteText');
+        const text = input.value.trim();
+        if (!text) {
+            showToast('введите текст');
+            return;
+        }
+        
+        notes.unshift({ 
+            id: Date.now(), 
+            text: text
+        });
+        saveNotes();
+        renderNotes();
+        input.value = '';
+        showToast('заметка добавлена');
+    }
+
+    function deleteNote(id) {
+        notes = notes.filter(n => n.id !== id);
+        saveNotes();
+        renderNotes();
+        showToast('заметка удалена');
+    }
+
+    function renderNotes() {
+        const container = document.getElementById('notesList');
+        if (notes.length === 0) {
+            container.innerHTML = '<div class="empty">📭 нет заметок</div>';
+            updateStats();
+            return;
+        }
+        
+        container.innerHTML = '';
+        notes.forEach(note => {
+            const div = document.createElement('div');
+            div.className = 'note-item';
+            div.innerHTML = `
+                <span class="note-text">📌 ${escapeHtml(note.text)}</span>
+                <button class="delete-note" data-id="${note.id}">✕</button>
+            `;
+            container.appendChild(div);
+        });
+        
+        document.querySelectorAll('.delete-note').forEach(btn => {
+            btn.addEventListener('click', () => deleteNote(parseInt(btn.dataset.id)));
+        });
+        
+        updateStats();
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    document.getElementById('addNoteBtn').addEventListener('click', addNote);
+    document.getElementById('noteText').addEventListener('keypress', e => {
+        if (e.key === 'Enter') addNote();
+    });
+    loadNotes();
+
+    // ========== КАЛЬКУЛЯТОР ==========
+    function getNumbers() {
+        const a = parseFloat(document.getElementById('calcA').value);
+        const b = parseFloat(document.getElementById('calcB').value);
+        return { a, b };
+    }
+
+    function showResult(value, operation) {
+        const resultDiv = document.getElementById('calcResult');
+        if (isNaN(value)) {
+            resultDiv.innerHTML = 'Результат: ошибка';
+            showToast('ошибка вычисления');
+        } else if (!isFinite(value)) {
+            resultDiv.innerHTML = 'Результат: бесконечность';
+        } else {
+            const rounded = Math.round(value * 10000) / 10000;
+            resultDiv.innerHTML = `Результат (${operation}): ${rounded}`;
+        }
+    }
+
+    document.getElementById('sumBtn').addEventListener('click', () => {
+        const { a, b } = getNumbers();
+        showResult(a + b, '+');
+    });
+    document.getElementById('diffBtn').addEventListener('click', () => {
+        const { a, b } = getNumbers();
+        showResult(a - b, '-');
+    });
+    document.getElementById('multBtn').addEventListener('click', () => {
+        const { a, b } = getNumbers();
+        showResult(a * b, '×');
+    });
+    document.getElementById('divBtn').addEventListener('click', () => {
+        const { a, b } = getNumbers();
+        if (b === 0) {
+            document.getElementById('calcResult').innerHTML = 'Результат: деление на ноль';
+            showToast('деление на ноль');
+        } else {
+            showResult(a / b, '÷');
+        }
+    });
+    document.getElementById('powBtn').addEventListener('click', () => {
+        const { a, b } = getNumbers();
+        showResult(Math.pow(a, b), '^');
+    });
+
+    // Сохранение значений калькулятора
+    function saveCalcValues() {
+        localStorage.setItem('calc_a', document.getElementById('calcA').value);
+        localStorage.setItem('calc_b', document.getElementById('calcB').value);
+    }
+    function loadCalcValues() {
+        const a = localStorage.getItem('calc_a');
+        const b = localStorage.getItem('calc_b');
+        if (a) document.getElementById('calcA').value = a;
+        if (b) document.getElementById('calcB').value = b;
+    }
+    document.getElementById('calcA').addEventListener('change', saveCalcValues);
+    document.getElementById('calcB').addEventListener('change', saveCalcValues);
+    loadCalcValues();
+
+    // ========== ТАЙМЕР ==========
+    let timerInterval = null;
+    let remaining = 0;
+    let initialValue = 0;
+    let timerEndTime = null;
+
+    function updateTimerDisplay() {
+        const display = document.getElementById('timerDisplay');
+        const progressBar = document.getElementById('timerProgress');
+        
+        if (remaining <= 0 && timerInterval === null) {
+            display.innerText = 'время вышло';
+            if (progressBar) progressBar.style.width = '0%';
+        } else {
+            display.innerText = `${remaining} сек`;
+            if (initialValue > 0 && progressBar) {
+                const progress = (remaining / initialValue) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+        }
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerEndTime = null;
+            showToast('таймер остановлен');
+        }
+    }
+
+    function startTimer() {
+        stopTimer();
+        
+        const input = document.getElementById('timerSec');
+        let seconds = parseInt(input.value);
+        
+        if (isNaN(seconds) || seconds <= 0) {
+            remaining = 10;
+            initialValue = 10;
+            input.value = 10;
+        } else if (seconds > 3600) {
+            remaining = 3600;
+            initialValue = 3600;
+            input.value = 3600;
+        } else {
+            remaining = seconds;
+            initialValue = seconds;
+        }
+        
+        timerEndTime = Date.now() + remaining * 1000;
+        updateTimerDisplay();
+        
+        timerInterval = setInterval(() => {
+            if (timerEndTime) {
+                const now = Date.now();
+                const newRemaining = Math.max(0, Math.ceil((timerEndTime - now) / 1000));
+                
+                if (newRemaining !== remaining) {
+                    remaining = newRemaining;
+                    updateTimerDisplay();
+                    
+                    if (remaining <= 0) {
+                        stopTimer();
+                        showToast('время вышло');
+                    }
+                }
+            }
+        }, 100);
+        
+        showToast(`таймер ${remaining} сек`);
+    }
+
+    function resetTimer() {
+        stopTimer();
+        const input = document.getElementById('timerSec');
+        let val = parseInt(input.value);
+        if (isNaN(val) || val <= 0) val = 10;
+        if (val > 3600) val = 3600;
+        remaining = val;
+        initialValue = val;
+        input.value = val;
+        updateTimerDisplay();
+        showToast('таймер сброшен');
+    }
+
+    document.getElementById('startTimerBtn').addEventListener('click', startTimer);
+    document.getElementById('stopTimerBtn').addEventListener('click', stopTimer);
+    document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
+
+    // Сохранение значения таймера
+    const lastTimer = localStorage.getItem('last_timer');
+    if (lastTimer) document.getElementById('timerSec').value = lastTimer;
+    document.getElementById('timerSec').addEventListener('change', () => {
+        localStorage.setItem('last_timer', document.getElementById('timerSec').value);
+    });
+
+    showToast('готов к работе');
+</script>
+</body>
+</html>
